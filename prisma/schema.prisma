@@ -1,0 +1,78 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [uuidOssp(map: "uuid-ossp")]
+}
+
+model User {
+  id         String     @id @unique
+  username   String     @unique
+  email      String     @unique
+  created_at DateTime   @default(now())
+  videos     Video[]
+  likes      Like[]
+  followers  Follower[]
+  comments   Comment[]
+  chats      Chat[]
+}
+
+model Video {
+  id         String    @id @default(dbgenerated("uuid_generate_v4()"))
+  title      String
+  uri        String
+  user_id    String
+  user       User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  likes      Like[]
+  created_at DateTime  @default(now())
+  comment    Comment[]
+}
+
+model Like {
+  id            String   @id @default(dbgenerated("uuid_generate_v4()"))
+  user_id       String
+  user          User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  video_id      String
+  video         Video    @relation(fields: [video_id], references: [id], onDelete: Cascade)
+  video_user_id String
+  created_at    DateTime @default(now())
+}
+
+model Follower {
+  id               String   @id @default(dbgenerated("uuid_generate_v4()"))
+  user_id          String
+  user             User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  follower_user_id String
+  created_at       DateTime @default(now())
+}
+
+model Comment {
+  id            String   @id @default(dbgenerated("uuid_generate_v4()"))
+  user_id       String
+  user          User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  video_id      String
+  video         Video    @relation(fields: [video_id], references: [id], onDelete: Cascade)
+  video_user_id String
+  text          String
+  created_at    DateTime @default(now())
+}
+
+model Chat {
+  id           String   @id @default(dbgenerated("uuid_generate_v4()"))
+  user_id      String
+  user         User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  chat_user_id String
+  users_key    String
+  text         String
+  created_at   DateTime @default(now())
+}
