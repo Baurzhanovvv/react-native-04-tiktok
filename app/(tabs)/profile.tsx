@@ -1,25 +1,25 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import { useAuth } from '@/providers/AuthProvider'
+import { supabase } from '@/utils/supabase'
+import Profilee from '@/components/profilee'
 
 type Props = {}
 
 const Profile = (props: Props) => {
-  const { signOut } = useAuth()
-  return (
-    <View className='flex-1 justify-center items-center bg-white'>
-      <Text className='text-black font-bold text-2xl'>Profile</Text>
+  const { user, signOut, followers, following } = useAuth()
 
-      <TouchableOpacity
-        onPress={signOut}
-        className='bg-black px-4 py-2 rounded-lg'
-        >
-        <Text className='text-white font-bold text-3xl'>
-          Sign Out
-        </Text>
-      </TouchableOpacity>
-    </View>
-  )
+  const addProfilePicture = async () => {
+    // const { data, error } = await supabase
+    //   .storage
+    //   .from('profile')
+    //   .upload(user?.id, {
+    //     cacheControl: '3600',
+    //     upsert: false
+    //   })
+  }
+
+  return <Profilee user={user} following={following} followers={followers} signOut={signOut} />
 }
 
 export default Profile
